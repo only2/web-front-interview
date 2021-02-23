@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    this的指向，是在函数被调用的时候确定的。也就是执行上下文被创建时确定的。
+    在函数执行过程中，this一旦被确定，就不可更改了
+    箭头函数会捕获其所在上下文的this值，作为自己的this值
+</body>
+
+    <script>
+        function Foo() {
+            getName = function () { alert (1); };
+            return this;
+        }
+        Foo.getName = function () { alert (2);};
+        Foo.prototype.getName = function () { alert (3);};
+        var getName = function () { alert (4);};
+        function getName() { alert (5);}
+        //请写出以下输出结果：
+        Foo.getName(); // 2
+        getName(); // 4
+            // 变量提升和函数表达式的坑
+                function Foo() {
+                    getName = function () { alert (1); };
+                    return this;
+                }
+                var getName;//只提升变量声明
+                function getName() { alert (5);}//提升函数声明，覆盖var的声明
+
+                Foo.getName = function () { alert (2);};
+                Foo.prototype.getName = function () { alert (3);};
+                getName = function () { alert (4);};//最终的赋值再次覆盖function getName声明
+                getName();//最终输出4
+            // 变量提升和函数表达式的坑
+
+        // 点的优先级大于new new的优先级大于函数执行
+        Foo().getName(); // 1
+        getName(); // 1
+        new Foo.getName(); // new (Foo.getName)() => 2
+        new Foo().getName(); // (new Foo()).getName() => 3
+        new new Foo().getName(); // new ((new Foo()).getName)(); =>3
+
+        /**
+        * Question 1
+        */
+
+        var name = 'window'
+        var person1 = {
+            name: 'person1',
+            show1: function () {
+                console.log(this.name)
+            },
+            show2: () => console.log(this.name),
+            show3: function () {
+                return function () {
+                    console.log(this.name)
+                }
+            },
+            show4: function () {
+                return () => console.log(this.name)
+            }
+        }
+        var person2 = { name: 'person2' }
+        person1.show1() // person1
+        person1.show1.call(person2) // person2
+
+        person1.show2() // window
+        person1.show2.call(person2) // window
+
+        person1.show3()() // window
+        person1.show3().call(person2) // person2
+        person1.show3.call(person2)() // window
+
+        person1.show4()() // window => person1
+        person1.show4().call(person2) // window => person1
+        person1.show4.call(person2)() // person2
+
+        /**
+        * Question 2
+        */
+        function fun(n,o) {
+            console.log(o)
+            return {
+                fun:function(m){
+                    return fun(m,n);
+                }
+            };
+        }   
+        var a = fun(0);  a.fun(1);  a.fun(2);  a.fun(3);//undefined,?,?,?
+        var b = fun(0).fun(1).fun(2).fun(3);//undefined,?,?,?
+        var c = fun(0).fun(1);  c.fun(2);  c.fun(3);//undefined,?,?,?
+        //问:三行a,b,c的输出分别是什么？
+        //答案：
+        //a: undefined,0,0,0
+        //b: undefined,0,1,2
+        //c: undefined,0,1,1
+    </script>
+
+</html>
