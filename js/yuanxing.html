@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    原型对象
+        我们创建的每一个函数，都可以有一个prototype属性，该属性指向一个对象。这个对象，就是我们这里说的原型对象。
+        在默认情况下，所有原型对象都会自动获得一个constructor(构造函数属性)，这个属性包含一个指向prototype属性所在函数的指针。
+        当我们在创建对象时，可以根据自己的需求，选择性的将一些属性和方法通过prototype属性，挂载在原型对象上。
+        而每一个new出来的实例，都有一个__proto__属性，该属性指向构造函数的原型对象，
+        通过这个属性，让实例对象也能够访问原型对象上的方法。
+        因此，当所有的实例都能够通过__proto__访问到原型对象时，原型对象的方法与属性就变成了共有方法与属性。
+    原型链
+        每个构造函数都有一个原型对象，原型对象都包含一个指向构造函数的指针。而通过构造函数创建的实例都包含一个指向原型对象的内部指针。
+</body>
+</html>
