@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    防抖函数原理
+        在事件被触发n秒后再执行回调，如果在这n秒内又重新触发，则重新计时
+    适用场景
+        1、按钮提交场景：防止多次提交按钮，只执行最后提交的一次
+        2、服务端验证场景：表单验证需要服务端配合，只执行一段连续的输入事件的最后一次，还有搜索联想词功能
+    节流函数原理
+        规定在一个单位时间内，只能触发一次函数。如果这个单位时间内触发多次函数，只有一次生效。
+    适用场景
+        1、监听滚动事件，比如是否滑到底部自动加载更多，用throttle来判断
+    <input type="text" id="text">
+</body>
+    <script>
+        // 防抖
+        function debounce (func, wait) {
+            let timeout;
+            return function() {
+                const context = this;
+                const args = arguments;
+                if (timeout) {
+                    clearTimeout(timeout)
+                }
+                timeout = setTimeout(function() {
+                    func.apply(context, args)
+                }, wait);
+            }
+        }
+        // 节流
+        function throttle(fun, delay) {
+            let last, deferTimer
+            return function (args) {
+                let that = this
+                let _args = arguments
+                let now = +new Date()
+                if (last && now < last + delay) {
+                    clearTimeout(deferTimer)
+                    deferTimer = setTimeout(function () {
+                        last = now
+                        fun.apply(that, _args)
+                    }, delay)
+                }else {
+                    last = now
+                    fun.apply(that,_args)
+                }
+            }
+        }
+        //ajax请求
+        function ajax(content) {
+            console.log('ajax request ' + content)
+        }
+        let debounceAjax = debounce(ajax, 3000, true);
+        //输入框input事件
+        var inputa = document.getElementById("text");
+        inputa.addEventListener('keyup', function (e) {
+            debounceAjax(e.target.value)
+        })
+    </script>
+</html>
