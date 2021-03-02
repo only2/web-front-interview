@@ -8,7 +8,7 @@
 <body>
     apply() 方法在使用一个指定的 this 值和若干个指定的参数值的前提下调用某个函数或方法。
     <script>
-        // 举个例子:
+        // 举个例子: ES5
         Function.prototype.apply = function (context, arr) {
             var context = Object(context) || window;
             context.fn = this;
@@ -26,6 +26,22 @@
             }
 
             delete context.fn
+            return result;
+        }
+        Function.prototype.apply = function (context, arr) {
+            if (typeof this !== "function") {
+                throw new TypeError("Error");
+                return;
+            };
+            let result;
+            context = context || window;
+            context.fn = this;
+            if (arr && arr.length) {
+                result = context.fn(...arr);
+            } else {
+                result = context.fn();
+            }
+            delete context.fn;
             return result;
         }
     </script>
