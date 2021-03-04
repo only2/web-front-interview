@@ -19,17 +19,34 @@
 </body>
     <script>
         // 防抖
-        function debounce (func, wait) {
-            let timeout;
-            return function() {
-                const context = this;
-                const args = arguments;
-                if (timeout) {
-                    clearTimeout(timeout)
+        function debounce(func, wait, immediate) {
+            let timer;
+            return function () {
+                //this指向debounce
+                let context = this;
+                //即参数，func,wait
+                let args = arguments;
+                //如果timer不为null, 清除定时器
+                if (timer) clearTimeout(timer);
+                //如果是立即执行
+                if (immediate) {
+                    //定义callNow = !timer
+                    var callNow = !timer;
+                    //定义wait时间后把timer变为null
+                    //即在wait时间之后事件才会有效
+                    timer = setTimeout(() => {
+                        timer = null;
+                    }, wait)
+                    //如果callNow为true,即原本timer为null
+                    //那么执行func函数
+                    if (callNow) func.apply(context, args)
+                } else {
+                    //如果是不立即执行
+                    //那就是每次重新定时
+                    timer = setTimeout(function () {
+                        func.apply(context, args)
+                    }, wait);
                 }
-                timeout = setTimeout(function() {
-                    func.apply(context, args)
-                }, wait);
             }
         }
         // 节流
@@ -61,5 +78,9 @@
         inputa.addEventListener('keyup', function (e) {
             debounceAjax(e.target.value)
         })
+        function handle() {
+            console.log(Math.random());
+        }
+        window.addEventListener("mousemove",debounce(handle,1000,true));
     </script>
 </html>
