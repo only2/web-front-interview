@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    letcode 141题目 环状链表 142 202 206 递归逆转链表 支持反转几个 92 链表区间反转 25 62
+    leetcode 141 判断单向链表是否有环
+</body>
+<script>
+    // leetcode 141 判断单向链表是否有环
+        // 快慢指针解法
+            // 定义两个指针，快指针每次走两步，慢指针每次走一步，如果有环则快慢指针一定会相遇
+            var hasCycle = function(head) {
+                if (!head || !head.next) {
+                    return false
+                }
+                let slow = head;
+                let fast = head;
+                while (fast && fast.next) {
+                    slow = slow.next;
+                    fast = fast.next.next;
+                    if (fast === slow) {
+                        return true;
+                    }
+                    
+                }
+                return false
+            };
+            // 利用json.parse(json.stringify())
+            try {
+                JSON.parse(JSON.stringify(head));
+                return false;
+            }
+            catch(err){
+                return true;
+            }
+    // leetcode 142 判断有环单向链表中环的起点位置
+        // 快慢指针解法
+            // 定义两个指针，快指针每次走两步，慢指针每次走一步，如果有环则快慢指针一定会相遇，相遇时一定在环内而且慢指针肯定还没走一圈
+            // 相遇时，让快指针重新指向链表头，每次走一步，满指针每次也走一步，再次相遇的时候 就是环的起点的位置
+            var cycleStart = function(head) {
+                let slow = head;
+                let fast = head;
+                while (fast && fast.next) {
+                    slow = slow.next;
+                    fast = fast.next.next;
+                    // 第一次相遇
+                    if (slow == fast) {
+                        fast = head;
+                        while (true) {
+                            if (slow == fast) {
+                                return fast;
+                            }
+                            fast = fast.next;
+                            slow = slow.next
+                        }
+                    }
+                }
+                return null
+            };
+    // leetcode 202 快乐数
+        // 快慢指针解法
+        var isHappy = function(n) {
+            if (!n) {
+                return false
+            }
+            function total (num) {
+                let number = num + '';
+                let sum = 0;
+                for (let i of number) {
+                    sum += i*i;
+                }
+                return sum
+            }
+            let slow = total(n);
+            let fast = total(slow);
+            while (slow != fast) {
+                slow = total(slow);
+                fast = total(total(fast))
+            }
+            return fast === 1
+        };
+        // 对象解法
+        var isHappy = function(n) {
+            if (!n) {
+                return false
+            }
+            function total (number) {
+                let num = number + '';
+                let sum = 0;
+                for (let i of num) {
+                    sum += i*i;
+                }
+                return sum
+            };
+            let res = total(n);
+            let obj = {};
+            while(res != 1) {
+                if (res in obj) {
+                    return false
+                } else {
+                    obj[res] = 1;
+                    res = total(res)
+                }
+            }
+             return true;
+        };
+    // leetcode 反转链表 206
+        // 使用循环
+        var reverseList = function(head) {
+            let prev = null;
+            let curr = head;
+            while (curr != null) {
+                let next = curr.next;
+                curr.next = prev;
+                prev = curr;
+                curr = next;
+            }
+            return prev;
+        };
+        // 使用尾递归
+        var reverseList = function(head) {
+            return reverse (null, head);
+        };
+        function reverse (prev, curr) {
+            if (!curr) return prev;
+            let tmp = curr.next;
+            curr.next = prev;
+            return reverse(curr, tmp)
+        }
+    // leetcode 反转链表 92
+        // 反转部分链表
+        var reverseBetween = function(head, left, right) {
+            const dummy_node = new ListNode(-1);
+            dummy_node.next = head;
+            let pre = dummy_node;
+            for (let i = 0; i < left - 1; ++i) {
+                pre = pre.next;
+            }
+
+            let cur = pre.next;
+            for (let i = 0; i < right - left; ++i) {
+                const next = cur.next;
+                cur.next = next.next;
+                next.next = pre.next;
+                pre.next = next;
+            }
+            return dummy_node.next;
+        };
+    // leetcode k个一组 反转链表 25 24（k=2）的特殊场景
+        const myReverse = (head, tail) => {
+            //反转子链表
+            let prev = tail.next;
+            let p = head;
+            while (prev !== tail) {
+                const nex = p.next;
+                p.next = prev;
+                prev = p;
+                p = nex;
+            }
+            return [tail, head];
+        }
+        var reverseKGroup = function(head, k) {
+            const hair = new ListNode(0);
+            hair.next = head;
+            let pre = hair;
+
+            while (head) {
+                let tail = pre;
+                // 查看剩余部分长度是否大于等于 k
+                for (let i = 0; i < k; ++i) {
+                    tail = tail.next;
+                    if (!tail) {
+                        return hair.next;
+                    }
+                }
+                const nex = tail.next;
+                [head, tail] = myReverse(head, tail);
+                // 把子链表重新接回原链表
+                pre.next = head;
+                tail.next = nex;
+                pre = tail;
+                head = tail.next;
+            }
+            return hair.next;
+        };
+    // leetcode 61 旋转链表
+    var rotateRight = function(head, k) {
+        if (!head) return null
+        let curr = head, n = 0
+        while (++n && curr.next) curr = curr.next
+        // 形成环链表
+        curr.next = head
+        k = k % n // 去重
+        // 找到打断位置
+        for (let i = 1; i < n - k; i++) {
+            head = head.next
+        }
+        // 对环链表打断再拼接得到答案
+        let tmp = head
+        head = head.next
+        tmp.next = null
+        return head
+    };
+</script>
+</html>
