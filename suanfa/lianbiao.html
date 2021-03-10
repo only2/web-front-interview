@@ -188,22 +188,71 @@
             return hair.next;
         };
     // leetcode 61 旋转链表
-    var rotateRight = function(head, k) {
-        if (!head) return null
-        let curr = head, n = 0
-        while (++n && curr.next) curr = curr.next
-        // 形成环链表
-        curr.next = head
-        k = k % n // 去重
-        // 找到打断位置
-        for (let i = 1; i < n - k; i++) {
+        var rotateRight = function(head, k) {
+            if (!head) return null
+            let curr = head, n = 0
+            while (++n && curr.next) curr = curr.next
+            // 形成环链表
+            curr.next = head
+            k = k % n // 去重
+            // 找到打断位置
+            for (let i = 1; i < n - k; i++) {
+                head = head.next
+            }
+            // 对环链表打断再拼接得到答案
+            let tmp = head
             head = head.next
-        }
-        // 对环链表打断再拼接得到答案
-        let tmp = head
-        head = head.next
-        tmp.next = null
-        return head
-    };
+            tmp.next = null
+            return head
+        };
+    // leetcode 19 删除链表
+        var removeNthFromEnd = function(head, n) {
+            let preHead = new ListNode(0)
+            preHead.next = head
+            let fast = preHead, slow = preHead
+            // 快先走 n+1 步
+            while(n--) {
+                fast = fast.next
+            }
+            // fast、slow 一起前进
+            while(fast && fast.next) {
+                fast = fast.next
+                slow = slow.next
+            }
+            slow.next = slow.next.next
+            return preHead.next
+        };
+    // leetcode 83 删除排序链表中的重复节点
+        var deleteDuplicates = function(head) {
+            var cur = head;
+            while(cur && cur.next) {
+                if(cur.val == cur.next.val) {
+                    cur.next = cur.next.next;
+                } else {
+                    cur = cur.next;
+                }
+            }
+            return head;
+        };
+    // leetcode 82 删除排序链表中的重复节点
+        var deleteDuplicates = function(head) {
+            var node=new ListNode(-1)
+            node.next=head
+            var slow=node
+            var fast=node.next
+            while(fast){
+                if(fast.next && fast.next.val == fast.val){
+                tmp = fast.val
+                while(fast && tmp==fast.val)
+                    fast=fast.next
+                }else{
+                slow.next=fast
+                slow=fast
+                fast=fast.next
+                }
+                slow.next = fast
+            }
+            return node.next
+        };
 </script>
 </html>
