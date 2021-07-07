@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // webpack打包原理
+            //webpack打包原理是根据文件间的依赖关系对其进行静态分析，将这些模块按指定规则生成静态资源，
+            //当webpack处理程序时，它会递归地构建一个依赖关系图，将所有这些模块打包成一个或多个bundle
+        // 有哪些常见的Loader？你用过哪些Loader？
+            // file-loader：把文件输出到一个文件夹中，在代码中通过相对 URL 去引用输出的文件 (处理图片和字体)
+            // url-loader：与 file-loader 类似，区别是用户可以设置一个阈值，大于阈值会交给 file-loader 处理，
+                // 小于阈值时返回文件 base64 形式编码 (处理图片和字体)
+            // source-map-loader：加载额外的 Source Map 文件，以方便断点调试
+            // image-loader：加载并且压缩图片文件
+            // babel-loader：把 ES6 转换成 ES5
+            // sass-loader：将SCSS/SASS代码转换成CSS
+            // css-loader：加载 CSS，支持模块化、压缩、文件导入等特性
+            // style-loader：把 CSS 代码注入到 JavaScript 中，通过 DOM 操作去加载 CSS
+            // postcss-loader：扩展 CSS 语法，使用下一代 CSS，可以配合 autoprefixer 插件自动补齐 CSS3 前缀
+            // vue-loader：加载 Vue.js 单文件组件
+
+        // 有哪些常见的Plugin？你用过哪些Plugin？
+            // html-webpack-plugin：简化 HTML 文件创建 (依赖于 html-loader)
+            // mini-css-extract-plugin: 分离样式文件，CSS 提取为独立文件，支持按需加载 (替代extract-text-webpack-plugin)
+            // clean-webpack-plugin: 目录清理
+            // uglifyjs-webpack-plugin：不支持 ES6 压缩 (Webpack4 以前)
+        // Loader和Plugin的区别
+            //Loader 本质就是一个函数，在该函数中对接收到的内容进行转换，返回转换后的结果。
+            //因为 Webpack 只认识 JavaScript，所以 Loader 就成了翻译官，对其他类型的资源进行转译的预处理工作。
+            //Plugin 就是插件，基于事件流框架 Tapable，插件可以扩展 Webpack 的功能，在 Webpack 运行的生命周期中会广播出许多事件，Plugin 可以监听这些事件，在合适的时机通过 Webpack 提供的 API 改变输出结果。
+            //Loader 在 module.rules 中配置，作为模块的解析规则，类型为数组。每一项都是一个 Object，内部包含了 test(类型文件)、loader、options (参数)等属性。
+            //Plugin 在 plugins 中单独配置，类型为数组，每一项是一个 Plugin 的实例，参数都通过构造函数传入。
+        // Webpack构建流程简单说一下
+            // 初始化参数：从配置文件和 Shell 语句中读取与合并参数，得出最终的参数
+            // 开始编译：用上一步得到的参数初始化 Compiler 对象，加载所有配置的插件，执行对象的 run 方法开始执行编译
+            // 确定入口：根据配置中的 entry 找出所有的入口文件
+            // 编译模块：从入口文件出发，调用所有配置的 Loader 对模块进行翻译，再找出该模块依赖的模块，再递归本步骤直到所有入口依赖的文件都经过了本步骤的处理
+            // 完成模块编译：在经过第4步使用 Loader 翻译完所有模块后，得到了每个模块被翻译后的最终内容以及它们之间的依赖关系
+            // 输出资源：根据入口和模块之间的依赖关系，组装成一个个包含多个模块的 Chunk，再把每个 Chunk 转换成一个单独的文件加入到输出列表，这步是可以修改输出内容的最后机会
+            // 输出完成：在确定好输出内容后，根据配置确定输出的路径和文件名，把文件内容写入到文件系统
+        // Webpack 的热更新原理
+            // Webpack 的热更新又称热替换（Hot Module Replacement），缩写为 HMR。 这个机制可以做到不用刷新浏览器而将新变更的模块替换掉旧的模块。
+            // HMR的核心就是客户端从服务端拉去更新后的文件，准确的说是 chunk diff (chunk 需要更新的部分)，
+            // 实际上 WDS 与浏览器之间维护了一个 Websocket，当本地资源发生变化时，WDS 会向浏览器推送更新，并带上构建时的 hash，
+            // 让客户端与上一次资源进行对比。客户端对比出差异后会向 WDS 发起 Ajax 请求来获取更改内容(文件列表、hash)，
+            // 这样客户端就可以再借助这些信息继续向 WDS 发起 jsonp 请求获取该chunk的增量更新。
+        // 文件指纹是什么？怎么用？
+            //文件指纹是打包后输出的文件名的后缀。
+            // Hash：和整个项目的构建相关，只要项目文件有修改，整个项目构建的 hash 值就会更改
+            // Chunkhash：和 Webpack 打包的 chunk 有关，不同的 entry 会生出不同的 chunkhash
+            // Contenthash：根据文件内容来定义 hash，文件内容不变，则 contenthash 不变
+        // 如何优化 Webpack 的构建速度？
+            // 使用高版本的 Webpack 和 Node.js
+            // 多进程/多实例构建：HappyPack(不维护了)、thread-loader
+            // 压缩代码 mini-css-extract-plugin 提取 Chunk 中的 CSS 代码到单独文件，通过 css-loader 的 minimize 选项开启 cssnano 压缩 CSS。
+            // 缩小打包作用域
+            // 提取页面公共资源
+                // 使用 html-webpack-externals-plugin，将基础包通过 CDN 引入，不打入 bundle 中
+                // 使用 SplitChunksPlugin 进行(公共脚本、基础包、页面公共文件)分离(Webpack4内置) ，替代了 CommonsChunkPlugin 插件
+            // Tree shaking
+
+            // function common(s1,s2){
+            //     let maxstr='',str='';
+            //     for(let i=0;i<s2.length;i++){
+            //         str += s2[i];
+            //         console.log('str', str)
+            //         if(s1.indexOf(str)==-1){
+            //             str = str.substr(1);
+            //         }
+            //         else if(str.length > maxstr.length){
+            //             maxstr = str; 
+            //         }
+            //     }
+            //     return maxstr;
+            // }
+            // common('abcdefghijklmnop', 'abcsafjklmnopqrstuvw')
+            function test(data) {
+                let arr = data.trim().split('');
+                let doubleArr = [];
+                let obj = {};
+                arr.forEach((item, index) => {
+                    if (obj.hasOwnProperty(item)) {
+                            console.log('重复', item)
+                            doubleArr.push(item);
+                        } else {
+                            console.log('不重复', item)
+                            obj[item] = index;
+                        }
+                })
+                console.log('doubleArr', doubleArr);
+                let result = arr.filter((item, index) => {
+                    return doubleArr.indexOf(item) == -1;
+                })
+                if (result && result.length) {
+                    console.log(result[0])
+                } else {
+                        console.log(-1);
+                }
+            }
+            test('asdfasdfo')
+    </script>
+</body>
+</html>

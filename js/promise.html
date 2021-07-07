@@ -225,6 +225,20 @@
                 }
             })
         }
+       function race (promises) {
+            return new MyPromise(function(resolve, reject) {
+                if (!Array.isArray(promises)) {
+                    return reject(new Error('传入的参数必须是数组！'));
+                }
+                for (let i = 0; i < promises.length; i++) {
+                    promises[i].then(function(data) {
+                        resolve(data);
+                    }, function(error) {
+                        reject(error);
+                    });
+                }
+            });
+        }
         const pro1 = new Promise((resolve, reject) => {
             setTimeout(() => {
                 resolve('1')

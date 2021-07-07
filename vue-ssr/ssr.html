@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        //目标是生成一个「服务器 bundle」用于服务端首屏渲染，和一个「客户端bundle」用于客户端激活
+        // 代码结构和通用的vue项目完全相同，多了两个入口文件 
+        // entry-client.js # 客户端入口，用于静态内容“激活”
+        // entry-server.js # 服务端入口，用于首屏内容渲染
+        // 宿主文件 最后需要定义宿主文件，修改./public/index.html <body><!--vue-ssr-outlet--></body>
+        // vue实例 router实例、store实例 改为工厂函数模式返回，而不再是单例模式
+        // entry-serser.js 返回一个函数，接收请求上下文，返回创建的vue实例
+            // 拿出store和router实例
+            // router.push(context.url);
+            // 获取匹配的路由组件数组
+            // 若无匹配则抛出异常
+            // 对所有匹配的路由组件调用可能存在的`asyncData()`
+            // 所有预取钩子 resolve 后，
+            // store 已经填充入渲染应用所需状态
+            // 将状态附加到上下文，且 `template` 选项用于 renderer 时，
+            // 状态将自动序列化为 `window.__INITIAL_STATE__`，并注入 HTML。
+        // entry-client.js 挂载到应用程序之前，store 就应该获取到状态
+        // store.replaceState(window.__INITIAL_STATE__);
+        // 两个插件分别负责打包客户端和服务端  vue-server-renderer/server-plugin
+        // vue-server-renderer/client-plugin 根据传入环境变量决定入口文件和相应配置项
+        // 服务器启动文件 vue-server-renderer => createBundleRenderer(serverJson、index.html、clientjson) => render
+        // 设置参数 url title两个参数 renderer.renderToString(context)
+    </script>
+</body>
+</html>
