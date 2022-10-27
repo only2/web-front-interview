@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 1.手写Object.create
+        function ObjectCreata (obj) {
+            function F () {};
+            F.prototype = obj;
+            return new F()
+        }
+        // 2.手写new
+        function objectFactory() {
+            let newObject = null;
+            let result = null;
+            let constructor = [].shift.call(arguments)
+            newObject = Object.create(constructor.prototype)
+            result = constructor.apply(result, arguments)
+            return typeof result === 'Object' ? result : newObject
+        }
+        // 手写防抖函数
+        function debounce(fn, wait, immediate) {
+            let timer;
+            return function() {
+                let connext = this;
+                let args = arguments;
+                if (timer) clearTimeout(timer);
+                if (immediate) {
+                    let callNow = !timer;
+                    if (callNow) {
+                        fn.apply(connext, args)
+                    } else {
+                        setTimeout(() => {
+                            timer = null;
+                        }, wait)
+                    }
+                } else {
+                    timer = setTimeout(() => {
+                        fn.apply(connext, args)
+                    }, wait)
+                }
+            }
+        }
+        // 手写节流函数
+        function throttle (fn, wait) {
+            let previous = new Date();
+            return function() {
+                let connext = this;
+                let args = arguments
+                let now = new Date();
+                if (now - previous > wait) {
+                    fn.apply(connext, args)
+                    previous = now
+                }
+            }
+        }
+        // 类型判断
+        function getType(value) {
+            if (value === null) {
+                return value + ""
+            } else if (typeof value === 'object'){
+                let typeName = Object.prototype.toString.call(value)
+                typeName = typeName.split(' ')[1].split('')
+                typeName.pop()
+                typeName.join('')
+                return typeName
+            } else {
+                return typeof value
+            }
+        }
+        // 深拷贝
+        function deepClone(data) {
+            if(!data || typeof data !== 'object') {
+                return
+            }
+            let result = Array.isArray(data) ? [] : {}
+            for (let key in data) {
+                if (data.hasOwnProperty(key)) {
+                    result[key] = typeof data[key] === 'object' ? deepClone(data[key]) : data[key]
+                }
+            }
+            return result
+        }
+        // 数组元素求和
+        function arraySum(data) {
+            if (!Array.isArray(data)) {
+                return
+            }
+            let result = data.reduce((p, c) => {
+                return p + c
+            }, 0)
+            // 数组扁平化可以使用toString方法
+        }
+        // listToTree
+        function listTotree(data) {
+            if (!Array.isArray(data)) {
+                return [{}]
+            }
+            let result = [];
+            let map = {};
+            data.forEach(item => {
+                map[item.id] = item  
+            })
+            data.forEach(item => {
+                const parent = map[item.pid];
+                if (parent) {
+                    const childs = parent.childs || []
+                    childs.push(item)
+                } else {
+                    result.push(item)
+                }
+            })
+            return JSON.parse(JSON.stringify(result))
+        }
+        // treeToList
+        function treeToList (arr) {
+            if (!Array.isArray(arr)) {
+                return []
+            }
+            let quene = [arr]
+            let result = []
+            while(quene.length > 0) {
+                let item = quene.shift()
+                result.push(...item)
+                if (item.childs?.length) {
+                    quene.push(...item.childs)
+                }
+            }
+            return result
+        }
+        // 红绿灯 
+        function light(color) {
+            return function() {
+                console.log(color)
+            }
+        }
+        const task = function(color, wait) {
+            return new Promis((resolve, reject) => {
+                const lightFn = light(color)
+                setTimeout(() => {
+                    lightFn()
+                    resolve()
+                }, wait)
+            })
+        }
+        const step = () => {
+            task(red, 3000)
+            .then(() => {
+                task(yellow, 2000)
+            })
+            .then(() => {
+                task(gerrn, 1000)
+            })
+            .then(() => {
+                step
+            })
+        }
+        step()
+        // async / await
+        const taskRunner =  async () => {
+            await task(3000, 'red')
+            await task(2000, 'green')
+            await task(2100, 'yellow')
+            taskRunner()
+        }
+        taskRunner()
+        // 查询文章中出现频率最高的单词
+        function findMostWord(str) {
+            if (!str) return;
+            str = str.trim().toLowerCase()
+            let wordList = str.match(/[a-z]+/g)
+            let visited = []
+            let maxNum = 0;
+            let maxWord = '';
+            str = " " + wordList.join(' ') + ' '
+            wordList.forEach(item => {
+                if (visited.indexOf(item) === -1) {
+                    visited.push(item)
+                    let word = new RegExp(` ${item} `, g)
+                    let number = str.match(word).length
+                    if (number > maxNum) {
+                        maxNum = number
+                        maxWord = item
+                    }
+                }
+            })
+            return `maxWord:${maxWord}--maxNum:${maxNum}`
+        }
+    </script>
+</body>
+</html>

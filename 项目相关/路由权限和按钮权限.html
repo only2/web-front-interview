@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 1、定义哪些路由不需要登录即可访问，如介绍页，登录页，这些路由可以先挂载
+        // 2、需要权限控制的路由配置时可以在路由meta 属性中定义一个数组标识可以访问该路由的用户身份有哪些
+        // 3、用户登录成功后重定向到首页，在全局路由守卫router.beforeEach中拦截路由
+            // 判断是否已经获取到token,获得token之后去请求用户基本信息获取到用户的基本信息
+            // 根据用户的角色来对之前定义的权限路由来做过滤，最终生成用户可访问的路由表
+        // 4、调用route.addRoute方法讲路由列表一个个加入到路由中
+        // 5、使用vuex来保存用户的路由表，根据vuex中可访问的路由渲染侧边栏菜单组件
+    </script>
+    <script>
+        // 按钮权限 指令实现
+         // 1。定义按钮哪些权限可以看到 数组类型
+         // 在指令的钩子函数 inserted 和 updated函数中 从store中取当前用户的角色
+         // 和按钮的权限进行匹配 匹配到则显示，匹配不到则隐藏
+    </script>
+</body>
+</html>

@@ -50,19 +50,23 @@
             // 这样客户端就可以再借助这些信息继续向 WDS 发起 jsonp 请求获取该chunk的增量更新。
         // 文件指纹是什么？怎么用？
             //文件指纹是打包后输出的文件名的后缀。
+            // 指定打包的范围 includ
             // Hash：和整个项目的构建相关，只要项目文件有修改，整个项目构建的 hash 值就会更改
             // Chunkhash：和 Webpack 打包的 chunk 有关，不同的 entry 会生出不同的 chunkhash
             // Contenthash：根据文件内容来定义 hash，文件内容不变，则 contenthash 不变
         // 如何优化 Webpack 的构建速度？
             // 使用高版本的 Webpack 和 Node.js
+            // noparse 第三方模块没有AMD/CommonJS规范版本 不进行转化和解析 noParse: /jquery|lodash/
             // 多进程/多实例构建：HappyPack(不维护了)、thread-loader
+            // cache-loader 在一些性能开销较大的 loader 之前添加 cache-loader，将结果缓存中磁盘中
             // 压缩代码 mini-css-extract-plugin 提取 Chunk 中的 CSS 代码到单独文件，通过 css-loader 的 minimize 选项开启 cssnano 压缩 CSS。
+            // CompressionWebpackPlugin插件能够通过压缩算法，将前端打包好的资源文件进一步压缩
             // 缩小打包作用域
             // 提取页面公共资源
-                // 使用 html-webpack-externals-plugin，将基础包通过 CDN 引入，不打入 bundle 中
+                // 使用 externals，将基础包通过 CDN 引入，不打入 bundle 中
                 // 使用 SplitChunksPlugin 进行(公共脚本、基础包、页面公共文件)分离(Webpack4内置) ，替代了 CommonsChunkPlugin 插件
             // Tree shaking
-
+            // babel配置优化 .babelrc 中增加 @babel/plugin-transform-runtime
             // function common(s1,s2){
             //     let maxstr='',str='';
             //     for(let i=0;i<s2.length;i++){

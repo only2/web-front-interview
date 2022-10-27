@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <!-- import CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+	<style>
+		.simple-dialog-wrapper {
+			position: fixed;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			left: 0;
+			overflow: auto;
+		}
+		.dialog-modal {
+				position: fixed;
+				left: 0;
+				top: 0;
+				width: 100vw;
+				height: 100vh;
+				opacity: 0.5;
+				background: #000000;
+		}
+		.simple-dialog-wrapper .simple-dialog-content {
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			background: #fff;
+			border-radius: 2px;
+			box-shadow: 0 1px 3px rgb(0 0 0 / 30%);
+			box-sizing: border-box;
+		}
+		.simple-dialog-wrapper .simple-dialog-content .simple-dialog-header{
+			padding: 20px 20px 10px;
+			display: flex;
+			justify-content: space-between;
+		}
+		.simple-dialog-wrapper .simple-dialog-content .simple-dialog-header .header-close-btn {
+			padding: 0;
+			background: transparent;
+			border: none;
+			outline: none;
+			cursor: pointer;
+			font-size: 16px;
+		}
+		.simple-dialog-wrapper .simple-dialog-content .simple-dialog-body{
+			padding: 30px 20px;
+			color: #606266;
+			font-size: 14px;
+			word-break: break-all;
+		}
+		.simple-dialog-wrapper .simple-dialog-content .simple-dialog-footer{
+			padding: 10px 20px 20px;
+			text-align: right;
+			box-sizing: border-box;
+		}
+	</style>
+</head>
+<body>
+  <div id="app">
+    <el-button @click="dialogVisible = true">打开弹窗</el-button>
+    <simple-dialog
+      title="提示"
+      :visible.sync="dialogVisible"
+      @close="handelDialogClose"
+      @open="handelDialogOpen">
+      <span>这是dialogbody中的内容</span>
+      <span slot="title">这是插槽的标题</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span>
+    </simple-dialog>
+  </div>
+</body>
+  <!-- import Vue before Element -->
+  <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <script>
+		const popupMixin = {
+			props: {
+				visible: {
+					type: Boolean,
+					default: false
+				},
+			},
+			data() {
+				return {
+					opened: false,
+					defaultZindex: 2000,
+					modalDom: '',
+				};
+			},
+			watch: {
+				visible(val) {
+					if (val) {
+						this.openModal()
+					} else {
+						console.log('mixinvisible')
+						this.closeModal()
+					}
+				}
+			},
+			methods: {
+				// 打开蒙层
+				openModal() {
+					if (this.opened) return;
+					const dom = this.$el;
+					// 内容z-index比蒙层的z-index要大
+					dom.style.zIndex = this.defaultZindex + 1
+					document.body.appendChild(this.getModalDom());
+					this.opened = true;
+				},
+				// 关闭蒙层
+				closeModal() {
+					this.opened = false;
+					document.body.removeChild(this.getModalDom());
+				},
+				// 获取蒙层dom
+				getModalDom() {
+					let modalDom = this.modalDom;
+					// 无则创建 有则直接返回
+					if (!modalDom) {
+						modalDom = document.createElement('div');
+						modalDom.classList.add('dialog-modal')
+						modalDom.style.zIndex = this.defaultZindex;
+						this.modalDom = modalDom;
+					}
+					return this.modalDom
+				}
+			}
+		}
+		// 定义simpleDialo组件
+		Vue.component('simple-dialog', {
+			name: 'SimpleDialog',
+			mixins: [popupMixin],
+			props: {
+				visible: {
+					type: Boolean,
+					default: false
+				},
+				title: {
+					type: String,
+					default: ''
+				},
+				width: {
+					type: String,
+					default: '50%'
+				},
+			},
+			data: function () {
+				return {
+					closed: false,
+				}
+			},
+			mounted() {
+				if (this.visible) {
+					this.openModal()
+				}
+			},
+			watch: {
+				visible(val) {
+					if (val) {
+						this.closed = false;
+						this.$emit('open');
+					} else {
+						console.log('visible')
+						if (!this.closed) this.$emit('close');
+					}
+				}
+  		},
+			computed: {
+				style() {
+					let style = {
+						zIndex: 2001
+					};
+					if (this.width) {
+						style.width = this.width;
+					}
+					return style;
+				}
+			},
+			methods: {
+				handleWrapperClick() {
+					this.handleClose();
+				},
+				handleClose() {
+					this.$emit('update:visible', false);
+					this.$emit('close');
+					this.closed = true;
+				},
+			},
+			template: `<div
+				v-show="visible"
+				class="simple-dialog-wrapper"
+				@click.self="handleWrapperClick">
+				<div
+					class="simple-dialog-content"
+					ref="dialog"
+					:style="style">
+					<div class="simple-dialog-header">
+						<slot name="title">
+							<span class="dialog-title">{{ title }}</span>
+						</slot>
+						<el-button
+							class="header-close-btn"
+							@click="handleClose">
+							<i class="simple-dialog-close el-icon el-icon-close"></i>
+						</el-button>
+					</div>
+					<div class="simple-dialog-body"><slot></slot></div>
+					<div class="simple-dialog-footer" v-if="$slots.footer">
+						<slot name="footer"></slot>
+					</div>
+				</div>
+			</div>`
+		})
+    new Vue({
+      el: '#app',
+			data() {
+				return {
+					dialogVisible: true,
+				};
+			},
+			methods: {
+				handelDialogClose() {
+					console.log('handelDialogClose')
+				},
+				handelDialogOpen() {
+					console.log('handelDialogOpen')
+				}
+			}
+    })
+  </script>
+</html>

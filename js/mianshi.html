@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+</head>
+<body>
+</body>
+<script>
+	let originData = [
+		{
+			label: '时间',
+			dataList: ['2020', '2020', '2020','2021', '2021', '2021','2022', '2022', '2022',]
+		},
+		{
+			label: '套餐类型',
+			dataList: ['套餐1', '套餐2', '套餐3','套餐1', '套餐2', '套餐3','套餐1', '套餐2', '套餐3',]
+		},
+		{
+			label: '收费金额',
+			dataList: ['27.1', '45', '87','47', '89', '125','63.3', '145', '287',]
+		},
+	]
+	let dimension = '时间'
+	// 根据label返回去重后的选项列表
+	function getUniqueList(label) {
+		let list = originData.filter(item => {
+			return item.label === label
+		})[0]?.dataList;
+		return Array.from(new Set(list))
+	}
+	// 返回数据查询字典集合
+	function getDictionaries(data, needRoundDataLabels = []) {
+		// return {时间-套餐：收费金额}，如{2020-套餐一: 27}
+		// 聚合对象数组
+		let dictionaries = {};
+		let dataTogetherArr = []
+		// 时间维度数组
+		let dimensionData = []
+		// 其他维度的数组
+		let otherData = []
+		data.forEach(item => {
+			if (item.label === dimension) {
+				dimensionData.push(item)
+			} else {
+				otherData.push(item)
+			}
+		})
+		dimensionData[0].dataList.forEach((item, index) => {
+			let togetherObj = {
+				[dimension]: item,
+			}
+			otherData.forEach(other => {
+				// 取出其他维度的label
+				const label = other.label
+				// 存在数据需要进行四舍五入
+				togetherObj[label] = needRoundDataLabels.includes(label) ? Math.round(other.dataList[index]) : other.dataList[index]
+			})
+			dataTogetherArr.push(togetherObj)
+		})
+		dataTogetherArr.forEach(dataTogether => {
+			let values = Object.values(dataTogether)
+			const value = values.pop()
+			const key = values.join('-')
+			dictionaries[key] = value
+		})
+		return dictionaries;
+	}
+	// 数据格式化方法
+	function formate(data) {
+		// 定义循环的维度
+		if (!Array.isArray(data)) {
+			return []
+		}
+		let yearList = getUniqueList('时间')
+		let packageList = getUniqueList('套餐类型')
+		let result = [[dimension, ...packageList]]
+		const dictionaries = getDictionaries(data, ['收费金额'])
+		yearList.forEach(year => {
+			let valueArr = [year]
+			packageList.forEach(package => {
+				valueArr.push(dictionaries[`${year}-${package}`])
+			})
+			result.push(valueArr)
+		})
+		console.log('result', result)
+	}
+	formate(originData)
+</script>
+</html>

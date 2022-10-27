@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        // 1、创建自定义的渲染器 
+            //创建nodeOps （定义子节点 新增 删除 创建等方法）
+            //创建patchProp (节点属性和事件)
+        // 2、根据自定义渲染器和游戏容器组件生成vue实例
+        // 3、将vue实例挂在到pixi.js创建的容器元素上
+
+        // 具体实现
+            //1。容器组件分为三种场景 等待开始 游戏进行中 游戏结束
+            // 游戏进行中
+                // 1、飞机缓动出场 tween.js 
+                // 创建我方飞机和我方子弹
+                // 创建敌方飞机和敌方子弹
+                // 我方飞机和敌方飞机相撞 飞机和子弹相撞 子弹和子弹相撞 
+                // 矩形碰撞 两个矩形中心点的坐标相减的距离大于各个矩形宽度的一半的和
+                // 飞机操控优化 操作指令放到数组中 将上和下放到一起处理 左右放到一起 
+                //  利用pixi自带的ticker进行轮训
+    </script>
+</body>
+</html>

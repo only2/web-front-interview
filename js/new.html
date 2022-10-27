@@ -19,7 +19,7 @@
             console.log('I am ' + this.name);
         }
         function objectFactory() {
-            var obj = new Object(),
+            var obj = new Object();
             Constructor = [].shift.call(arguments);
             obj.__proto__ = Constructor.prototype;
             var ret = Constructor.apply(obj, arguments);

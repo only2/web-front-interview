@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        function broadCast (componentName, eventName, params) {
+            this.$children.forEach(child => {
+                let name = child.$options.componentName
+                if (name === componentName) {
+                    child.$emit.apply(child, [eventName].concat(params))
+                } else {
+                    broadCast.apply(child, [componentName, eventName].concat(params))
+                }
+            })
+        }
+        export default {
+            dispatch(componentName, eventName, params) {
+                let parent = this.$parent || this.$root;
+                let name = parent.$options.componentName;
+                while(parent && (!name || name !== componentName)) {
+                    parent = parent.$parent;
+                    if (parent) {
+                        name =  parent.$options.componentName
+                    }
+                }
+                if (parent) {
+                    parent.$emit.apply(parent, [eventName].concat(params))
+                }
+            },
+            broadCast() {
+                broadCast.call(this, componentName, eventName, params)
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <script>
+        import Vue from 'vue';
+        /**
+         * 防止按钮重复点击
+         * @param {number} time
+         * @returns
+         */
+        Vue.directive('debounce', {
+        // bind 指令第一次绑定到元素时调用。在这里可以进行一次性的初始化设置,比如我们可以设置样式
+        bind(el) {
+            // console.log(el)
+        },
+        // 被绑定的元素插入到父节点时
+        inserted(el, binding) {
+            function avoidRepeatHandler() {
+            if (!el.disabled) {
+                el.disabled = true;
+                el.timer = setTimeout(() => {
+                el.disabled = false;
+                }, binding.value || 1000);
+            }
+            }
+            el.addEventListener('click', avoidRepeatHandler);
+            el.avoidRepeatHandler = avoidRepeatHandler;
+        },
+        unbind(el) {
+            el.removeEventListener('click', el.avoidRepeatHandler);
+            delete el.avoidRepeatHandler;
+            clearTimeout(el.timer);
+        },
+        });
+    </script>
+</body>
+</html>
